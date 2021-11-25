@@ -1,16 +1,19 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AttackState : BaseState
 {
-    private float _attackReadyTimer;
+    private Launcher _launcher;
     private Drone _drone;
 
-    public AttackState(Drone drone) : base(drone.gameObject)
+    private float _attackReadyTimer;
+    private float _targetReCheckRate = .5f;
+    private float _nextCheckTime;
+
+    public AttackState(Drone drone, Launcher launcher) : base(drone.gameObject)
     {
         _drone = drone;
+        _launcher = launcher;
     }
 
     public override Type Tick()
@@ -24,9 +27,30 @@ public class AttackState : BaseState
 
         if (_attackReadyTimer <= 0f)
         {
-            _drone.FireWeapon();
+            _launcher.FireWeapon();
         }
 
+        if (_drone.Target.hasChanged)
+        {
+            //_nextCheckTime = Time.time + _targetReCheckRate;
+            return typeof(ChaseState);
+        }
+
+        //if (TimeToCheckPoisition())
+        //{
+        //    if (_drone.Target.hasChanged)
+        //    {
+        //        _nextCheckTime = Time.time + _targetReCheckRate;
+        //        return typeof(ChaseState);
+        //    }
+        //    _nextCheckTime = Time.time + _targetReCheckRate;
+        //}
+
         return null;
+    }
+
+    private bool TimeToCheckPoisition()
+    {
+        return Time.time > _nextCheckTime;
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +12,8 @@ public class Drone : MonoBehaviour
     public Team Team => _team;
     public StateMachine StateMachine => GetComponent<StateMachine>();
 
+    public Launcher launcher;
+
     void Awake()
     {
         InitializeStateMachine();
@@ -24,7 +25,7 @@ public class Drone : MonoBehaviour
         {
             { typeof(WanderState), new WanderState(this) },
             { typeof(ChaseState), new ChaseState(this) },
-            { typeof(AttackState), new AttackState(this) }
+            { typeof(AttackState), new AttackState(this, launcher) }
         };
 
         GetComponent<StateMachine>().SetStates(states);
@@ -33,28 +34,6 @@ public class Drone : MonoBehaviour
     public void SetTarget(Transform target)
     {
         Target = target;
-    }
-
-    public void FireWeapon()
-    {
-        _laserVisual.transform.position = (Target.position + transform.position) / 2f;
-
-        float distance = Vector3.Distance(Target.position, transform.position);
-        _laserVisual.transform.localScale = new Vector3(0.1f, 0.1f, distance);
-        _laserVisual.SetActive(true);
-
-        StartCoroutine(TurnOffLaser());
-    }
-
-    private IEnumerator TurnOffLaser()
-    {
-        yield return new WaitForSeconds(0.25f);
-        _laserVisual.SetActive(false);
-
-        if (Target != null)
-        {
-            Destroy(Target.gameObject);
-        }
     }
 }
 

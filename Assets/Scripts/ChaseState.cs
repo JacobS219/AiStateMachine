@@ -4,6 +4,7 @@ using UnityEngine;
 public class ChaseState : BaseState
 {
     private Drone _drone;
+    private float _turnSpeed = .25f;
 
     public ChaseState(Drone drone) : base(drone.gameObject)
     {

@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -46,11 +43,10 @@ public class WanderState : BaseState
             _transform.Translate(Vector3.forward * Time.deltaTime * GameSettings.DroneSpeed);
         }
 
-        Debug.DrawRay(_transform.position, _direction * _rayDistance, Color.red);
+        //Debug.DrawRay(_transform.position, _direction * _rayDistance, Color.red);
         while (IsPathBlocked())
         {
             FindRandomDestination();
-            Debug.Log("WALL!");
         }
 
         return null;
@@ -93,19 +89,25 @@ public class WanderState : BaseState
             if (Physics.Raycast(pos, direction, out hit, GameSettings.AggroRadius))
             {
                 var drone = hit.collider.GetComponent<Drone>();
+                var player = hit.collider.GetComponent<PlayerController>();
                 if (drone != null && drone.Team != _gameObject.GetComponent<Drone>().Team)
                 {
-                    Debug.DrawRay(pos, direction * hit.distance, Color.red);
+                    //Debug.DrawRay(pos, direction * hit.distance, Color.red);
                     return drone.transform;
                 }
                 else
                 {
-                    Debug.DrawRay(pos, direction * hit.distance, Color.yellow);
+                    //Debug.DrawRay(pos, direction * hit.distance, Color.yellow);
+                }
+
+                if (player != null && player.Team != _gameObject.GetComponent<Drone>().Team)
+                {
+                    return player.transform;
                 }
             }
             else
             {
-                Debug.DrawRay(pos, direction * GameSettings.AggroRadius, Color.white);
+                //Debug.DrawRay(pos, direction * GameSettings.AggroRadius, Color.white);
             }
             direction = stepAngle * direction;
         }
